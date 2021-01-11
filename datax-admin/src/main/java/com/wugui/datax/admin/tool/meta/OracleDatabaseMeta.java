@@ -68,4 +68,11 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     public String getSQLQueryColumns(String... args) {
         return "select table_name,comments from user_tab_comments where table_name = ?";
     }
+    public String getSQLQueryOwners() {
+        return "select distinct owner from all_views";
+    }
+    public String getSQLQueryViews(String owner) {
+        return "select view_name from all_views where owner='"+ owner +"'";
+    }
+
 }

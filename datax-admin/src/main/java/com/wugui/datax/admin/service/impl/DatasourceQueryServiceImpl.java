@@ -5,7 +5,10 @@ import com.google.common.collect.Lists;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.DatasourceQueryService;
 import com.wugui.datax.admin.service.JobDatasourceService;
-import com.wugui.datax.admin.tool.query.*;
+import com.wugui.datax.admin.tool.query.BaseQueryTool;
+import com.wugui.datax.admin.tool.query.HBaseQueryTool;
+import com.wugui.datax.admin.tool.query.MongoDBQueryTool;
+import com.wugui.datax.admin.tool.query.QueryToolFactory;
 import com.wugui.datax.admin.util.JdbcConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +54,9 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
             return new MongoDBQueryTool(datasource).getCollectionNames(datasource.getDatabaseName());
         } else {
             BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
-            if(StringUtils.isBlank(tableSchema)){
+            if (StringUtils.isBlank(tableSchema)) {
                 return qTool.getTableNames();
-            }else{
+            } else {
                 return qTool.getTableNames(tableSchema);
             }
         }
@@ -95,6 +98,9 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
             return new HBaseQueryTool(datasource).getColumns(tableName);
         } else if (JdbcConstants.MONGODB.equals(datasource.getDatasource())) {
             return new MongoDBQueryTool(datasource).getColumns(tableName);
+        } else if (JdbcConstants.ORACLE.equals(datasource.getDatasource())) {
+            BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
+            return queryTool.getColumnNames( tableName, datasource.getDatasource());
         } else {
             BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
             return queryTool.getColumnNames(tableName, datasource.getDatasource());
